@@ -1,32 +1,132 @@
 #include <iostream>
-#include <math.h>
+#include <string>
 using namespace std;
 
-int karatsuba_mul(int n1, int n2)
+int make_length_equal(string &a, string &b)
 {
-    int len_n1 = to_string(n1).length();
-    int len_n2 = to_string(n2).length();
+    int len_n1 = a.length();
+    int len_n2 = b.length();
 
-    if (len_n1 == 1 | len_n2 == 1)
+    if (len_n1 != len_n2)
     {
-        return n1 * n2;
+        string str;
+        if (len_n1 > len_n2)
+        {
+            for (int i = 0; i < len_n1 - len_n2; i++)
+                str.append("0");
+            str.append(b);
+            b = str;
+            return len_n1;
+        }
+        else
+        {
+            for (int i = 0; i < len_n2 - len_n1; i++)
+                str.append("0");
+            str.append(a);
+            a = str;
+            return len_n2;
+        }
     }
-    int l1_h = len_n1 / 2;
-    int l2_h = len_n2 / 2;
-    int b = n1 % static_cast<int>(pow(10, l1_h));
-    int a = n1 - b;
-    int d = n2 % static_cast<int>(pow(10, l2_h));
-    int c = n2 - d;
+    return len_n1;
+}
 
-    return karatsuba_mul(a, c) * pow(10, (l1_h + l2_h) / 2) + karatsuba_mul(a, d) * pow(10, l1_h / 2) + karatsuba_mul(b, c) * pow(10, l2_h / 2) + karatsuba_mul(b, d);
+string minus_fun(string a, string b)
+{
+    string sum;
+    string str1, str2;
+    int len = make_length_equal(a, b);
+
+    int flag = 0;
+    for (int i = len - 1; i >= 0; i--)
+    {
+
+        int first = a.at(i) - '0';
+        int second = b.at(i) - '0';
+        int sum_bit = first - second + flag;
+        if (sum_bit < 0)
+        {
+            sum_bit += 10;
+            flag = -1;
+        }
+        else
+            flag = 0;
+        sum = to_string(sum_bit) + sum;
+    }
+    if (flag == -1)
+        cout << "Wrong" << endl;
+    return sum;
+}
+
+string add(string a, string b, int n, int m)
+{
+    string sum;
+    string str1, str2;
+    for (int i = 0; i < n; i++)
+    {
+        str1.append("0");
+    }
+
+    for (int i = 0; i < m; i++)
+        str2.append("0");
+
+    a.append(str1);
+    b.append(str2);
+    int len = make_length_equal(a, b);
+    int flag = 0;
+    for (int i = len - 1; i >= 0; i--)
+    {
+
+        int first = a.at(i) - '0';
+        int second = b.at(i) - '0';
+        int sum_bit = first + second + flag;
+        if (sum_bit >= 10)
+        {
+            sum_bit -= 10;
+            flag = 1;
+        }
+        else
+            flag = 0;
+        sum = to_string(sum_bit) + sum;
+    }
+    if (flag == 1)
+        sum = '1' + sum;
+    return sum;
+}
+
+string karatsuba_mul(string n1, string n2)
+{
+    int len = make_length_equal(n1, n2);
+    if (len == 1)
+    {
+        int prod = (n1.at(0) - '0') * (n2.at(0) - '0');
+        return to_string(prod);
+    }
+    int len_h = len / 2;
+
+    string b = n1.substr(len - len_h, len_h);
+    string a = n1.substr(0, len - len_h);
+    string d = n2.substr(len - len_h, len_h);
+    string c = n2.substr(0, len - len_h);
+
+    string ac = karatsuba_mul(a, c);
+    string bd = karatsuba_mul(b, d);
+    string acbd = add(ac, bd, 0, 0);
+    string ab = add(a, b, 0, 0);
+    string cd = add(c, d, 0, 0);
+    string adcb = minus_fun(karatsuba_mul(ab, cd), acbd);
+
+    string add1 = add(adcb, bd, len_h, 0);
+    string result = add(add1, ac, 0, (int)(len / 2) * 2);
+
+    return result;
 }
 int main()
 {
-    int a, b;
+    string a, b;
     cout << "Karatsuba algorithm:" << endl;
     cin >> a;
     cin >> b;
 
-    int prod = karatsuba_mul(a, b);
+    string prod = karatsuba_mul(a, b);
     cout << prod << endl;
 }
