@@ -21,6 +21,8 @@ class solver
             }
             res.push_back(left[i]);
         }
+        if (j < right.size())
+            res.insert(res.end(), right.begin() + j, right.end());
         return num;
     }
 
