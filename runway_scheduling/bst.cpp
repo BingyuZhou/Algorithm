@@ -6,7 +6,7 @@ class node
     int val;
     int size;
     node *left, *right, *parent;
-    node(int v) : val(v), size{1}, left(NULL), right(NULL), parent(NULL) {}
+    node(int v) : val(v), size(0), left(NULL), right(NULL), parent(NULL) {}
 };
 
 class binaray_search_tree
