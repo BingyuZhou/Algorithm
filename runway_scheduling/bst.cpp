@@ -1,12 +1,13 @@
 #include <iostream>
-
+#include <tuple>
 class node
 {
   public:
     int val;
     int size;
+    int h;
     node *left, *right, *parent;
-    node(int v) : val(v), size(0), left(NULL), right(NULL), parent(NULL) {}
+    node(int v) : val(v), size(0), h(0), left(NULL), right(NULL), parent(NULL) {}
 };
 
 class binaray_search_tree
@@ -15,7 +16,7 @@ class binaray_search_tree
     node *m_root = NULL;
 
     binaray_search_tree(){};
-    void insert(int v)
+    node *insert(int v)
     {
         node *newnode = new node(v);
 
@@ -43,7 +44,7 @@ class binaray_search_tree
                     if (!tmp->right)
                     {
                         tmp->right = newnode;
-                        newnode->parent = tmp->right;
+                        newnode->parent = tmp;
                         break;
                     }
                     else
@@ -51,6 +52,7 @@ class binaray_search_tree
                 }
             }
         }
+        return newnode;
     }
 
     node *find(int v)
@@ -78,8 +80,8 @@ class binaray_search_tree
         return tmp;
     }
 
-    int delete_min()
-    { //delete minimal node and return it
+    std::tuple<int, node *> delete_min()
+    { //delete minimal node and return it, also return the parent of the deleted node
         node *tmp = m_root;
         // tranverse to leftmost node
         while (tmp->left)
@@ -93,7 +95,7 @@ class binaray_search_tree
         else // smallest node is the root
             m_root = tmp->right;
 
-        return tmp->val;
+        return std::make_tuple(tmp->val, tmp->parent);
     }
 
     node *next_large(node *curr)
