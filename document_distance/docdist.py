@@ -170,7 +170,7 @@ def inner_product(L1, L2):
     sum = 0.0
     i = 0
     j = 0
-    while i < len(L1) and j < len(L2):
+    while (i < len(L1) and j < len(L2)):
         # L1[i:] and L2[j:] yet to be processed
         if L1[i][0] == L2[j][0]:
             # both vectors have this word
